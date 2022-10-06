@@ -20,10 +20,9 @@ class TabMenu(QTabWidget):
         self.hide()
         
         # create the tabs
-        #self.tabs = {}
-        #self.mk_file_tab()
-        #TODO
-        #self.mk_barcode_tab(barcodes)
+        self.tabs = {}
+        self.mk_file_tab()
+        self.mk_barcode_tab(barcodes)
 
     def open_tab(self, input_):
         if self.currentWidget() == self.tabs[input_]:
@@ -43,9 +42,8 @@ class TabMenu(QTabWidget):
         tab = QWidget()
         tab.setContentsMargins(0, 0, 0, 0)
         # For handeling the barcodes
-        bcw = BarcodeSelectWidget(barcodes)
         layout = QVBoxLayout()
-        layout.addWidget(bcw)
+       # layout.addWidget(bcw)
         tab.setLayout(layout)
         self.tabs['barcode'] = tab
         self.addTab(tab, "barcode")

@@ -1,31 +1,56 @@
 """Main module."""
 
 import sys
-import importlib
 import pandas as pd
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QSizePolicy,
-    QFileDialog,
-    QLabel,
-)
-from PySide6.QtGui import QAction
 from pathlib import Path
 import yaml
+
+from PySide6.QtWidgets import (
+    QTableView,
+    QApplication,
+    QHeaderView,
+    QTableWidgetItem,
+    QTableWidget,
+    QMenu,
+    QComboBox,
+    QLabel,
+    QListWidget,
+    QAbstractItemView,
+    QListWidgetItem,
+    QMainWindow
+)
+from PySide6.QtCore import (
+    QAbstractTableModel,
+    Qt,
+    QModelIndex,
+    QSortFilterProxyModel,
+    Slot,
+    QPoint,
+)
+from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6.QtGui import QAction
 
 import qtawesome as qta
 
 from poresamplespandas.ui.mw import Ui_MainWindow
 from poresamplespandas.widgets.tab_widget import TabMenu
 from poresamplespandas.widgets.data_widget import DataWidget
+from poresamplespandas.views.sample_table_view import SampleTableView
+
+from poresamplespandas.ui.mw import Ui_MainWindow
+from poresamplespandas.widgets.tab_widget import TabMenu
+from poresamplespandas.widgets.data_widget import DataWidget
+from poresamplespandas.views.sample_table_view import SampleTableView
+
 
 VERSION = "PORESAMPLESPANDAS"
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, barcodes):
+    def __init__(self, 
+                 model: QtCore.QAbstractTableModel,
+                 data: str,
+                 barcodes: str):
         super(MainWindow, self).__init__()
         self.setupUi(self)
 
@@ -34,13 +59,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.setup_action_buttons()
         self.populate_toolbar(barcodes)
-#        self.datawidget = DataWidget()
-#        self.model = CustomStandardItemModel()
+        
+        # data widget, source model, sample table view and table widget
+        self.source_model = self.create_model(model=model, 
+                                              data=data)
+        self.sample_table_view = SampleTableView(mainwindow=self)
+        self.sample_table_view.setModel(self.source_model)
+        self.setup_table_widget()
+        self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
+                                     table_widget=self.table_widget)
+        
+        
+
+
+        
 #        self.setup_signals()
 #
-#        self.horizontalLayout.addWidget(self.tabWidget)
-#        self.horizontalLayout.addWidget(self.datawidget)
-#        self.horizontalLayout.addWidget(self.datawidget)
+        self.horizontalLayout.addWidget(self.tabWidget)
+        self.horizontalLayout.addWidget(self.datawidget)
 #
 #    def setup_data(self, df):
 #        self.model.populate(df)
@@ -79,14 +115,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def populate_toolbar(self, barcodes):
         
         self.tabWidget = TabMenu(barcodes)
-
         self.toolBar.addAction(self.sb_buttons["file"])
         self.toolBar.addAction(self.sb_buttons["barcode"])
         self.toolBar.addAction(self.sb_buttons["settings"])
-
         self.toolBar.setMovable(False)
 
-#
     def setup_action_buttons(self):
 
         self.sb_buttons = {
@@ -118,6 +151,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for name, button in self.sb_buttons.items():
             if name != tab_name and button.isChecked():
                 button.setChecked(False)
+    
+    # TODO add different importers 
+    def create_model(
+        self, 
+        model: QtCore.QAbstractTableModel, 
+        data: str
+        ) -> QtCore.QAbstractItemModel:
+        """Creates a model and returns it"""
+        
+        # add different importers
+        df = pd.read_csv(data)
+        model = model(df)
+        return model
+    
+    def setup_table_widget(self):
+        self.table_widget = QTableWidget(8, 12)
+        v_header = [QTableWidgetItem(x) for x in "ABCDEFGH"]
+        for i, v in enumerate(v_header):
+            self.table_widget.setVerticalHeaderItem(i, v)
+        header = self.table_widget.verticalHeader()
+        header.setVisible(True)
+        self.add_data_to_plate_widget()
+
+    def add_data_to_plate_widget(self):
+        self.table_widget.clearContents()
+        number = 0
+        for sample in self.source_model._data["sample_id"]:
+            item = QTableWidgetItem(sample)
+            # item should not be editable
+            item.setFlags(~QtCore.Qt.ItemIsEditable)
+            if "POS" in sample:
+                item.setBackground(QtGui.QColor("#e5fab9"))
+            elif "NEG" in sample:
+                item.setBackground(QtGui.QColor("#fc9b90"))
+            else:
+                item.setBackground(QtGui.QColor("#b3d0ff"))
+
+            self.table_widget.setItem(number % 8, number // 8, item)
+            number += 1
+            if number > 12 * 8:
+                break
 
 #    def setup_signals(self):
 #        # file tab

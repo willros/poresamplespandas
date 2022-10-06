@@ -4,10 +4,14 @@ import qtvscodestyle as qtvsc
 import sys
 from pathlib import Path
 
+from poresamplespandas.models.pandas_model import PandasModel
+
    
 def main():
     app = QApplication(sys.argv)
-    mw = MainWindow(barcodes='barcodes')
+    mw = MainWindow(model=PandasModel,
+                    data='new_test.csv',
+                    barcodes='barcodes.csv')
 
     stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.LIGHT_VS)
     extra = Path("poresamplespandas/rc/style_add.qss").read_text()

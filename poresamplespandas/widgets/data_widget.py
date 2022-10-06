@@ -1,16 +1,19 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QSplitter, QLabel, QSpacerItem, QSizePolicy, \
-    QPushButton, QComboBox, QSpinBox, QFrame, QLineEdit
+    QPushButton, QComboBox, QSpinBox, QFrame, QLineEdit, QMainWindow, QTableWidget, QTableView
 from PySide6.QtGui import Qt
+
+from PySide6.QtCore import QAbstractTableModel
 
 import qtawesome as qta
 
+from ..views.sample_table_view import SampleTableView
 
 # This is where the data lives
 class DataWidget(QWidget):
-    def __init__(self):
-        super(DataWidget, self).__init__()
-
-    
+    def __init__(self, 
+                 sample_table_view: QTableView,
+                 table_widget: QTableWidget):
+        super(DataWidget, self).__init__()            
         self.vbox = QVBoxLayout()
         self.vbox.setObjectName(u"verticalLayout")
         self.splitter = QSplitter()
@@ -57,11 +60,11 @@ class DataWidget(QWidget):
         bhbox.addWidget(self.restore_combo)
 
         bvbox.insertLayout(0, bhbox)
-       # bvbox.addWidget(self.sample_table_view)
+        bvbox.addWidget(sample_table_view)
         bottom_widget.setLayout(bvbox)
 
         tvbox = QVBoxLayout()
-       # tvbox.addWidget(self.plate_table_view)
+        tvbox.addWidget(table_widget)
         top_widget.setLayout(tvbox)
         top_widget.setMaximumHeight(250)
         top_widget.setContentsMargins(0, 0, 0, 10)
@@ -69,6 +72,11 @@ class DataWidget(QWidget):
 
         self.splitter.addWidget(top_widget)
         self.splitter.addWidget(bottom_widget)
+        
+    def get_vline(self):
+        line = QFrame()
+        line.setFixedWidth(2)
+        return line
 
 
     

@@ -31,13 +31,13 @@ from pathlib import Path
 class SampleTableView(QTableView):
     """Class for The View of the sample sheet"""
 
-    def __init__(self, main_window):
+    def __init__(self, mainwindow):
         super(SampleTableView, self).__init__()
         vh = self.verticalHeader()
         vh.setContextMenuPolicy(Qt.CustomContextMenu)
         vh.customContextMenuRequested.connect(self.menu_delete_button)
         self.setSortingEnabled(False)
-        self.main_window = main_window
+        self.main_window = mainwindow
 
         # Drag and drop
         self.setDropIndicatorShown(True)
