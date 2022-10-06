@@ -11,8 +11,8 @@ class TabMenu(QTabWidget):
         self.vs = QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.setContentsMargins(0, 0, 0, 0)
         
-        #Size of the tab (350 is better than 130 IMHO)
-        self.setFixedWidth(350)
+        # which size??
+        self.setFixedWidth(200)
         
         #to hide the toggle bar above the tab bar
         self.tabBar().hide()
@@ -41,9 +41,9 @@ class TabMenu(QTabWidget):
     def mk_barcode_tab(self, barcodes):
         tab = QWidget()
         tab.setContentsMargins(0, 0, 0, 0)
-        # For handeling the barcodes
+        # For handling the barcodes
         layout = QVBoxLayout()
-       # layout.addWidget(bcw)
+        # layout.addWidget(BARCODES)
         tab.setLayout(layout)
         self.tabs['barcode'] = tab
         self.addTab(tab, "barcode")
