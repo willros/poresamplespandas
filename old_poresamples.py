@@ -72,9 +72,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
 
-        
-#        self.setup_signals()
-#
+        self._hide_columns()
+        self.removed_samples = QComboBox()
+
         self.horizontalLayout.addWidget(self.tabWidget)
         self.horizontalLayout.addWidget(self.datawidget)
 #
@@ -192,6 +192,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             number += 1
             if number > 12 * 8:
                 break
+                
+    def _hide_columns(self):
+        """
+        Hide columns from the TableViews
+        """
+        # hide order in both tables
+        order = self.source_model.find_column_index("order")
+        self.sample_table_view.hideColumn(order)
+
+    def add_removed_samples(self) -> None:
+        """Adds the sample id to the View of removed items"""
+        self.removed_samples.clear()
+        for item in self.source_model.removed_samples_df["sample_id"]:
+            self.removed_samples.addItem(item)
+
+    def restore_removed_samples(self, sample_index: int) -> None:
+        """Restore the chosen sample to the source model dataframe"""
+        restore = self.source_model.removed_samples_df.iloc[
+            sample_index : sample_index + 1
+        ]
+        self.source_model.addRow(restore)
+        self.removed_samples.removeItem(sample_index)
+
+        # drop the rows from the removed_samples_df
+        self.source_model.removed_samples_df = (
+            self.source_model.removed_samples_df
+            .drop(index=sample_index)
+            .reset_index(drop=True)
+        )
+
+        self.add_data_to_plate_widget()
+        
+    def update_barcodes_to_barcodelist(self):
+        self.barcode_list.clear()
+        for bc in self.barcode_df['bc']:
+            self.barcode_list.addItem(bc)
 
 #    def setup_signals(self):
 #        # file tab
