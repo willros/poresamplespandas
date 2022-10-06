@@ -1,0 +1,41 @@
+/* ... */
+
+
+Cell[dataClass=sample]::item {
+      background-color: rgb(203, 228, 249);
+}
+
+Cell[dataClass=sample]:selected:!active,
+Cell[dataClass=sample]:selected:!focus,
+Cell[dataClass=sample]::item:selected:!active,
+Cell[dataClass=sample]::item:selected {
+    background-color: rgb(188, 208, 225);
+}
+Cell[dataClass=sample]::item:!selected:hover {
+    background-color: rgb(188, 208, 225);
+}
+
+Cell[dataClass=pos]::item {
+      background-color: rgb(239, 249, 218);
+}
+
+Cell[dataClass=pos]:selected:!active,
+Cell[dataClass=pos]:selected:!focus,
+Cell[dataClass=pos]::item:selected:!active,
+Cell[dataClass=pos]::item:selected,
+Cell[dataClass=pos]::item:!selected:hover {
+    background-color: rgb(217, 225, 200);
+}
+
+Cell[dataClass=neg]::item {
+      background-color: rgb(249, 216, 214);
+}
+
+Cell[dataClass=neg]:selected:!active,
+Cell[dataClass=neg]:selected:!focus,
+Cell[dataClass=neg]::item:selected:!active,
+Cell[dataClass=neg]::item:selected,
+Cell[dataClass=neg]::item:!selected:hover {
+    background-color: rgb(225, 198, 197);
+}
+
