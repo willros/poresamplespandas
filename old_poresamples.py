@@ -37,11 +37,6 @@ from poresamplespandas.widgets.tab_widget import TabMenu
 from poresamplespandas.widgets.data_widget import DataWidget
 from poresamplespandas.views.sample_table_view import SampleTableView
 
-from poresamplespandas.ui.mw import Ui_MainWindow
-from poresamplespandas.widgets.tab_widget import TabMenu
-from poresamplespandas.widgets.data_widget import DataWidget
-from poresamplespandas.views.sample_table_view import SampleTableView
-
 
 VERSION = "PORESAMPLESPANDAS"
 
