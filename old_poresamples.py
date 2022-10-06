@@ -117,7 +117,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabWidget = TabMenu(barcodes)
         self.toolBar.addAction(self.sb_buttons["file"])
         self.toolBar.addAction(self.sb_buttons["barcode"])
-        self.toolBar.addAction(self.sb_buttons["settings"])
         self.toolBar.setMovable(False)
 
     def setup_action_buttons(self):
@@ -125,7 +124,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_buttons = {
             "file": QAction("file", self),
             "barcode": QAction("barcode", self),
-            "settings": QAction("settings", self),
         }
 
         self.sb_buttons["file"].setIcon(qta.icon("fa5.file"))
@@ -138,10 +136,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_buttons["barcode"].setCheckable(True)
         self.sb_buttons["barcode"].triggered.connect(self.on_sb_button_click)
 
-        self.sb_buttons["settings"].setIcon(qta.icon("ei.cogs"))
-        self.sb_buttons["settings"].setStatusTip("Settings")
-        self.sb_buttons["settings"].setCheckable(True)
-        self.sb_buttons["settings"].triggered.connect(self.on_sb_button_click)
 
     def on_sb_button_click(self):
         action = self.sender()
