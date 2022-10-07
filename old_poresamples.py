@@ -51,6 +51,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.setWindowTitle(f"poresamples {VERSION}")
         self.setWindowIcon(qta.icon("mdi6.cube-outline"))
+        
+         # removed samples
+        self.removed_samples = QComboBox()
 
         self.setup_action_buttons()
         self.populate_toolbar(barcodes)
@@ -62,16 +65,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sample_table_view.setModel(self.source_model)
         self.setup_table_widget()
         self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
-                                     table_widget=self.table_widget)
-        
+                                     table_widget=self.table_widget,
+                                     mainwindow=self)
         
 
-
-        self._hide_columns()
-        self.removed_samples = QComboBox()
+        
 
         self.horizontalLayout.addWidget(self.tabWidget)
         self.horizontalLayout.addWidget(self.datawidget)
+        
+        self._hide_columns()
+
 #
 #    def setup_data(self, df):
 #        self.model.populate(df)
@@ -108,19 +112,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #        )
 #
     def populate_toolbar(self, barcodes):
-        
         self.tabWidget = TabMenu(barcodes)
         self.toolBar.addAction(self.sb_buttons["file"])
         self.toolBar.addAction(self.sb_buttons["barcode"])
         self.toolBar.setMovable(False)
 
     def setup_action_buttons(self):
-
         self.sb_buttons = {
             "file": QAction("file", self),
             "barcode": QAction("barcode", self),
         }
-
         self.sb_buttons["file"].setIcon(qta.icon("fa5.file"))
         self.sb_buttons["file"].setStatusTip("Files")
         self.sb_buttons["file"].setCheckable(True)

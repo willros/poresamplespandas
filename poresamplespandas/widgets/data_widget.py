@@ -6,33 +6,33 @@ from PySide6.QtCore import QAbstractTableModel
 
 import qtawesome as qta
 
-from ..views.sample_table_view import SampleTableView
 
 # This is where the data lives
 class DataWidget(QWidget):
     def __init__(self, 
                  sample_table_view: QTableView,
-                 table_widget: QTableWidget):
+                 table_widget: QTableWidget,
+                 mainwindow: QMainWindow) -> None:
         super(DataWidget, self).__init__()            
         self.vbox = QVBoxLayout()
         self.vbox.setObjectName(u"verticalLayout")
         self.splitter = QSplitter()
         self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Vertical)
+        
+        # main window:
+        self.mainwindow = mainwindow
 
-        self.flowcell_edit = QLineEdit()
         self.vbox.addWidget(self.splitter)
         self.setLayout(self.vbox)
-
+        
         self.pos_ctrl_count_spin = QSpinBox()
         self.neg_ctrl_count_spin = QSpinBox()
-        self.restore_combo = QComboBox()
-        self.reset_sort_button = QPushButton("reset sort")
-
+        
+        # disable buttons before data is loaded
         self.pos_ctrl_count_spin.setDisabled(True)
         self.neg_ctrl_count_spin.setDisabled(True)
-        self.restore_combo.setDisabled(True)
-        self.reset_sort_button.setDisabled(True)
+        self.mainwindow.removed_samples.setDisabled(True)
 
         bottom_widget = QWidget()
         top_widget = QWidget()
@@ -50,14 +50,12 @@ class DataWidget(QWidget):
         bhbox.addWidget(QLabel("- ctrls"))
         bhbox.addWidget(self.pos_ctrl_count_spin)
         bhbox.addWidget(self.get_vline())
-        bhbox.addWidget(self.flowcell_edit)
         bhbox.addWidget(self.get_vline())
         bhbox.addSpacerItem(hspacer)
         bhbox.addWidget(self.get_vline())
-        bhbox.addWidget(self.reset_sort_button)
         bhbox.addWidget(self.get_vline())
         bhbox.addWidget(QLabel("restore samples"))
-        bhbox.addWidget(self.restore_combo)
+        bhbox.addWidget(self.mainwindow.removed_samples)
 
         bvbox.insertLayout(0, bhbox)
         bvbox.addWidget(sample_table_view)
