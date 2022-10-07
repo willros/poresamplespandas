@@ -94,41 +94,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.horizontalLayout.addWidget(self.datawidget)
         self._hide_columns()
 
-#
-#    def setup_data(self, df):
-#        self.model.populate(df)
-#        fields = list(df.columns)
-#
-#        self.all_filterproxy = CtrlProxyModel(fields.index("visible_all"))
-#        self.all_filterproxy.setSourceModel(self.model)
-#
-#        self.present_sample_filterproxy = CtrlProxyModel(
-#            fields.index("visible_samples")
-#        )
-#        self.present_sample_filterproxy.setSourceModel(self.all_filterproxy)
-#
-#        self.removed_sample_filterproxy = CtrlProxyModel(
-#            fields.index("visible_samples")
-#        )
-#        self.removed_sample_filterproxy.setSourceModel(self.all_filterproxy)
-#
-#        
-#        self.custom_sortproxy = MultiSortFilterProxy(fields.index("order"))
-#        self.custom_sortproxy.setSourceModel(self.present_sample_filterproxy)
-#
-#        self.plate_viewproxy = PlateProxy(fields.index("sample_id"))
-#        self.plate_viewproxy.setSourceModel(self.custom_sortproxy)
-#
-#        self.datawidget.set_data(
-#            fields,
-#            self.custom_sortproxy,
-#            self.plate_viewproxy,
-#            self.removed_sample_filterproxy,
-#            self.adjuster.pos_control_count,
-#            self.adjuster.neg_control_count,
-#            self.config["hidden_fields"],
-#        )
-#
     def populate_toolbar(self, barcodes):
         self.tabWidget = TabMenu(barcodes)
         self.toolBar.addAction(self.sb_buttons["file"])
