@@ -42,7 +42,7 @@ class SampleTableView(QTableView):
         # Drag and drop
         self.setDropIndicatorShown(True)
         self.setAcceptDrops(True)
-        
+                
 
     def remove_and_store(self):
         """Removes highlighted rows from the view and stores them in the list of removed rows"""

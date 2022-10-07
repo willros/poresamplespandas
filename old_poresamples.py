@@ -52,15 +52,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle(f"poresamples {VERSION}")
         self.setWindowIcon(qta.icon("mdi6.cube-outline"))
         
-         # removed samples
+        # removed samples
         self.removed_samples = QComboBox()
+        
+        # barcodes
+        self.barcode_df = pd.read_csv(barcodes)
+        self.barcode_list = QListWidget()
+        self.barcode_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.barcode_list.setDragEnabled(True)
+        self.update_barcodes_to_barcodelist()  
+        # how to change the size?
+        #self.barcode_list.setMinimumWidth(40)
 
+        # buttons
+        self.pos_button = QtWidgets.QPushButton("Positive")
+        self.pos_button.setObjectName("positiv")
+        self.pos_counter = 0
+        self.neg_button = QtWidgets.QPushButton("Negative")
+        self.neg_button.setObjectName("negativ")
+        self.neg_counter = 0
         self.setup_action_buttons()
+        # should barcodes go here or not??
         self.populate_toolbar(barcodes)
         
+        # signals and slots
+        self.pos_button.clicked.connect(self.add_row)
+        self.neg_button.clicked.connect(self.add_row)
+        #self.removed_samples.activated.connect(self.restore_removed_samples)
+        
         # data widget, source model, sample table view and table widget
-        self.source_model = self.create_model(model=model, 
-                                              data=data)
+        self.create_model(model=model, data=data)
         self.sample_table_view = SampleTableView(mainwindow=self)
         self.sample_table_view.setModel(self.source_model)
         self.setup_table_widget()
@@ -68,12 +89,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                      table_widget=self.table_widget,
                                      mainwindow=self)
         
-
-        
-
+        # layout 
         self.horizontalLayout.addWidget(self.tabWidget)
         self.horizontalLayout.addWidget(self.datawidget)
-        
         self._hide_columns()
 
 #
@@ -147,13 +165,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self, 
         model: QtCore.QAbstractTableModel, 
         data: str
-        ) -> QtCore.QAbstractItemModel:
+        ) -> None:
         """Creates a model and returns it"""
         
         # add different importers
         df = pd.read_csv(data)
-        model = model(df)
-        return model
+        self.source_model = model(df)
     
     def setup_table_widget(self):
         self.table_widget = QTableWidget(8, 12)
@@ -162,6 +179,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.table_widget.setVerticalHeaderItem(i, v)
         header = self.table_widget.verticalHeader()
         header.setVisible(True)
+        self.add_data_to_plate_widget()
+
+    def add_row(self, text):
+        name = self.sender().objectName()
+        if name == "positiv":
+            new_df = pd.DataFrame().assign(
+                sample_id=[f"POS_NY_{self.pos_counter}"], order=[-1]
+            )
+            self.pos_counter += 1
+        elif name == "negativ":
+            new_df = pd.DataFrame().assign(
+                sample_id=[f"NEG_NY_{self.neg_counter}"], order=[1]
+            )
+            self.neg_counter += 1
+        self.source_model.addRow(new_df)
         self.add_data_to_plate_widget()
 
     def add_data_to_plate_widget(self):
