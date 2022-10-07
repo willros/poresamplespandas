@@ -183,7 +183,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Hide columns from the TableViews
         """
-        # hide order in both tables
         order = self.source_model.find_column_index("order")
         self.sample_table_view.hideColumn(order)
 
@@ -290,24 +289,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #            df.to_pickle(fname)
 #
 #    def on_open(self):
-#        fname, _ = QFileDialog.getOpenFileName(
+#        filename, _ = QFileDialog.getOpenFileName(
 #            self,
 #            "Open file",
 #            "C:/Dev/PyCharmProjects/poresamples/demo",
 #            "data pickle (*.pkl)",
 #        )
 #
-#        if fname:
-#            df = pd.read_pickle(fname)
-#            self.setup_data(df)
-#
-#    def on_close(self):
-#        # remove this??
-#        self.model = CustomStandardItemModel()
-#
-#        self.horizontalLayout.removeWidget(self.datawidget)
-#        self.datawidget.deleteLater()
-#        self.datawidget = DataWidget()
-#        self.horizontalLayout.insertWidget(1, self.datawidget)
-#
+#        if not filename:
+            #return None
 
+#        df = pd.read_pickle(fname)
+         # clear the barcodes, plate and Everything! 
+         # set everything up again, with models and data and barcodes? 
+#        self.setup_data(df)
+#
