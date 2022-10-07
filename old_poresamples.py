@@ -73,7 +73,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.neg_counter = 0
         self.setup_action_buttons()
         # should barcodes go here or not??
-        self.populate_toolbar(barcodes)
+        self.populate_toolbar()
         
         # signals and slots
         self.pos_button.clicked.connect(self.add_row)
@@ -94,8 +94,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.horizontalLayout.addWidget(self.datawidget)
         self._hide_columns()
 
-    def populate_toolbar(self, barcodes):
-        self.tabWidget = TabMenu(barcodes)
+    def populate_toolbar(self):
+        self.tabWidget = TabMenu(self.barcode_list)
         self.toolBar.addAction(self.sb_buttons["file"])
         self.toolBar.addAction(self.sb_buttons["barcode"])
         self.toolBar.setMovable(False)

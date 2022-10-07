@@ -1,10 +1,10 @@
-from PySide6.QtWidgets import (QTabWidget, QWidget, QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel, QFormLayout, QComboBox, QLineEdit)
+from PySide6.QtWidgets import (QTabWidget, QWidget, QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel, QFormLayout, QComboBox, QLineEdit, QListWidget)
 from PySide6.QtGui import QAction
 import qtawesome as qta
 
 
 class TabMenu(QTabWidget):
-    def __init__(self, barcodes):
+    def __init__(self, barcodes: QListWidget):
         super(TabMenu, self).__init__()
 
         self.setStyleSheet("QTabWidget::pane { margin: -10px -9px -13px -9px; border: none; }")
@@ -38,12 +38,11 @@ class TabMenu(QTabWidget):
             self.show()
             
     #TODO
-    def mk_barcode_tab(self, barcodes):
+    def mk_barcode_tab(self, barcodes: QListWidget):
         tab = QWidget()
         tab.setContentsMargins(0, 0, 0, 0)
-        # For handling the barcodes
         layout = QVBoxLayout()
-        # layout.addWidget(BARCODES)
+        layout.addWidget(barcodes)
         tab.setLayout(layout)
         self.tabs['barcode'] = tab
         self.addTab(tab, "barcode")
