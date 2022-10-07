@@ -28,9 +28,7 @@ class DataWidget(QWidget):
             
         # main layout
         self.vbox = QVBoxLayout()
-        self.vbox.setObjectName(u"verticalLayout")
         self.splitter = QSplitter()
-        self.splitter.setObjectName(u"splitter")
         self.splitter.setOrientation(Qt.Vertical)
         self.vbox.addWidget(self.splitter)
         self.setLayout(self.vbox)

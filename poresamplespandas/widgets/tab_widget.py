@@ -37,7 +37,6 @@ class TabMenu(QTabWidget):
         else:
             self.show()
             
-    #TODO
     def mk_barcode_tab(self, barcodes: QListWidget):
         tab = QWidget()
         tab.setContentsMargins(0, 0, 0, 0)

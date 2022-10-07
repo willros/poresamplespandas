@@ -17,7 +17,8 @@ from PySide6.QtWidgets import (
     QListWidget,
     QAbstractItemView,
     QListWidgetItem,
-    QMainWindow
+    QMainWindow,
+    QFileDialog
 )
 from PySide6.QtCore import (
     QAbstractTableModel,
@@ -37,9 +38,7 @@ from poresamplespandas.widgets.tab_widget import TabMenu
 from poresamplespandas.widgets.data_widget import DataWidget
 from poresamplespandas.views.sample_table_view import SampleTableView
 
-
 VERSION = "PORESAMPLESPANDAS"
-
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, 
@@ -61,8 +60,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.barcode_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.barcode_list.setDragEnabled(True)
         self.update_barcodes_to_barcodelist()  
-        # how to change the size?
-        #self.barcode_list.setMinimumWidth(40)
+        self.barcode_list.setMinimumWidth(40)
 
         # buttons
         self.pos_button = QtWidgets.QPushButton("Positive")
@@ -79,6 +77,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pos_button.clicked.connect(self.add_row)
         self.neg_button.clicked.connect(self.add_row)
         self.removed_samples.activated.connect(self.restore_removed_samples)
+        self.file_tab_signals()
         
         # data widget, source model, sample table view and table widget
         self.create_model(model=model, data=data)
@@ -216,22 +215,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for bc in self.barcode_df['bc']:
             self.barcode_list.addItem(bc)
 
-#    def setup_signals(self):
-#        # file tab
-#        self.tabWidget.button_import.clicked.connect(self.on_import)
-#        self.tabWidget.button_save.clicked.connect(self.on_save)
-#        self.tabWidget.button_open.clicked.connect(self.on_open)
-#        self.tabWidget.button_close.clicked.connect(self.on_close)
-#        self.tabWidget.button_export.clicked.connect(self.on_export)
-#
-#        # settings tab
-#        # TODO
-#
-#    # functions for setup_signals
-#
-#    def on_export(self):
-#        print("OMFG")
-#
+    def file_tab_signals(self):
+        #self.tabWidget.button_import.clicked.connect(self.on_import)
+        #self.tabWidget.button_save.clicked.connect(self.on_save)
+        #self.tabWidget.button_open.clicked.connect(self.on_open)
+        #self.tabWidget.button_close.clicked.connect(self.on_close)
+        self.tabWidget.button_export.clicked.connect(self.on_export)
+
+    
+    # functions for setup_signals
+    def on_export(self):
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save file",
+            "/Users/wiro0005/Desktop",
+            "csv file (*.csv)",
+        )
+        # filter and save the file
+        (self.source_model._data
+         .drop(columns=['order'])
+         .to_csv(filename, index=False)
+        )
+
+
 #    # this can be more generalized and rewritten
 #    def on_import(self):
 #        indata, _ = QFileDialog.getOpenFileName(
