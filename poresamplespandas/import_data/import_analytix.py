@@ -18,9 +18,22 @@ def import_analytix(input_file: str) -> pd.DataFrame:
     :param input_file: str. Path to Analytix file.
     :returns: pd.DataFrame. Cleaned dataframe.
     """
-    analytix = (pd.read_csv(input_file, sep='‚')
+    analytix = (pd.read_csv(input_file, sep=';')
      .rename(columns=column_names)
-     .dropna(subset=['sample_id'])
+     .dropna()
     )
     
-    # add sorting columns
+    # Add sorting information etc.
+    # What should be seen in the view??
+    analytix = (analytix
+                # add new columns
+                .assign(order=0,
+                        barcode=' ',
+                        kit=' ',
+                        flowcell=' ',
+                        comment=' ')
+                # order and filter the columns
+                [['sample_id', 'barcode', 'kit', 'flowcell', 'sex', 'age', 'comment', 'order']]
+               )
+    
+    return analytix
