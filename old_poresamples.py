@@ -78,7 +78,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # signals and slots
         self.pos_button.clicked.connect(self.add_row)
         self.neg_button.clicked.connect(self.add_row)
-        #self.removed_samples.activated.connect(self.restore_removed_samples)
+        self.removed_samples.activated.connect(self.restore_removed_samples)
         
         # data widget, source model, sample table view and table widget
         self.create_model(model=model, data=data)
