@@ -81,6 +81,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.file_tab_signals()
         
         # data widget, source model, sample table view and table widget
+        self.input_model = model
         self.create_model(model=model, data=data)
         self.sample_table_view = SampleTableView(mainwindow=self)
         self.sample_table_view.setModel(self.source_model)
@@ -132,10 +133,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         data: str
         ) -> None:
         """Creates a model and returns it"""
-        
-        # add different importers
-        df = pd.read_csv(data)
-        self.source_model = model(df)
+        if not isinstance(data, pd.DataFrame):
+            data = pd.read_csv(data)
+        self.source_model = model(data)
     
     def setup_table_widget(self):
         self.table_widget = QTableWidget(8, 12)
@@ -216,7 +216,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.barcode_list.addItem(bc)
 
     def file_tab_signals(self):
-        #self.tabWidget.button_import.clicked.connect(self.on_import)
+        self.tabWidget.button_import.clicked.connect(self.on_import)
         #self.tabWidget.button_save.clicked.connect(self.on_save)
         #self.tabWidget.button_open.clicked.connect(self.on_open)
         #self.tabWidget.button_close.clicked.connect(self.on_close)
@@ -236,31 +236,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          .drop(columns=['order'])
          .to_csv(filename, index=False)
         )
+        
+    # TODO CLEAN THE CURRENT MODEL AND EVERYTHING AROUND IT WHEN READING IN NEW DATA 
+    def on_import(self):
+        indata, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open file",
+            "/Users/wiro0005/Desktop",
+            "analytix file (*.csv *.txt)",
+        )
+        
+        if indata: # and 'analytix' in indata:
+            print(indata)
+            indata = import_analytix(Path(indata).resolve())
+            
+            # call this setup_new_data function or something??????
+            self.create_model(model=self.input_model, data=indata)
+            self.sample_table_view = SampleTableView(mainwindow=self)
+            self.sample_table_view.setModel(self.source_model)
+            self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
+                                     table_widget=self.table_widget,
+                                     mainwindow=self)
+            self.removed_samples.clear()
+            self.add_data_to_plate_widget()
+            #clean the horizontal layout first!! 
+            self.horizontalLayout.addWidget(self.datawidget)
+            
 
 
-#    # this can be more generalized and rewritten
-#    def on_import(self):
-#        indata, _ = QFileDialog.getOpenFileName(
-#            self,
-#            "Open file",
-#            "C:/Dev/PyCharmProjects/poresamples/demo",
-#            "analytix file (*.csv *.txt)",
-#        )
-#        if indata:
-#            # The chosen module (e.g. analytix)
-#            name = self.tabWidget.chosen_module.currentText()
-#
-#            importer = importlib.import_module(
-#                f"modules.importers.{name}.importer"
-#            ).Importer()
-#
-#            df = self.adjuster.prepare(importer.load(indata))
-#
-#            if isinstance(df, pd.DataFrame):
-#                self.setup_data(df)
-#            else:
-#                print("DANGER DANGER!!!!!! PANIC!!")
-#
 #    def on_save(self):
 #        r_count = self.model.rowCount()
 #        c_count = self.model.columnCount()

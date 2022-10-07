@@ -28,12 +28,12 @@ def import_analytix(input_file: str) -> pd.DataFrame:
     analytix = (analytix
                 # add new columns
                 .assign(order=0,
-                        barcode=' ',
+                        barcodes=' ',
                         kit=' ',
                         flowcell=' ',
                         comment=' ')
                 # order and filter the columns
-                [['sample_id', 'barcode', 'kit', 'flowcell', 'sex', 'age', 'comment', 'order']]
+                [['sample_id', 'barcodes', 'kit', 'flowcell', 'sex', 'age', 'comment', 'order']]
                )
     
     return analytix
