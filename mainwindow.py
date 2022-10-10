@@ -177,7 +177,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
             self.neg_counter += 1
         self.source_model.addRow(new_df)
-        self.source_model._data = self.source_model._data.fillna(' ')
         self.add_data_to_plate_widget()
 
     def add_data_to_plate_widget(self):
