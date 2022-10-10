@@ -36,6 +36,7 @@ class DataWidget(QWidget):
         top_widget = QWidget()
         bvbox = QVBoxLayout()
         bhbox = QHBoxLayout()
+        tvbox = QVBoxLayout()
         hspacer = QSpacerItem(5, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         # add to layout
@@ -56,7 +57,6 @@ class DataWidget(QWidget):
         bvbox.insertLayout(0, bhbox)
         bvbox.addWidget(sample_table_view)
         bottom_widget.setLayout(bvbox)
-        tvbox = QVBoxLayout()
         tvbox.addWidget(table_widget)
         top_widget.setLayout(tvbox)
         top_widget.setMaximumHeight(250)
@@ -69,7 +69,10 @@ class DataWidget(QWidget):
         line = QFrame()
         line.setFixedWidth(2)
         return line
-
+    
+        
+        
+        
 
     
 
