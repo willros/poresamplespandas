@@ -97,6 +97,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.undo()
         self.save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
         self.save_shortcut.activated.connect(self.on_export)    
+        self.open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
+        self.open_shortcut.activated.connect(self.on_import)    
         
         # layout 
         self.horizontalLayout.addWidget(self.tabWidget)
@@ -157,16 +159,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def add_row(self, text):
         name = self.sender().objectName()
         if name == "positiv":
-            new_df = pd.DataFrame().assign(
-                sample_id=[f"POS_NY_{self.pos_counter}"], order=[-1]
+            new_df = (
+                pd.DataFrame()
+                .assign(
+                    sample_id=[f"POS_NY_{self.pos_counter}"], 
+                    order=[-1]
+                )
             )
             self.pos_counter += 1
         elif name == "negativ":
-            new_df = pd.DataFrame().assign(
-                sample_id=[f"NEG_NY_{self.neg_counter}"], order=[1]
+            new_df = (
+                pd.DataFrame()
+                .assign(
+                    sample_id=[f"NEG_NY_{self.neg_counter}"],
+                    order=[1]
+                )
             )
             self.neg_counter += 1
         self.source_model.addRow(new_df)
+        self.source_model._data = self.source_model._data.fillna(' ')
         self.add_data_to_plate_widget()
 
     def add_data_to_plate_widget(self):

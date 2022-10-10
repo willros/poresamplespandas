@@ -127,8 +127,13 @@ class PandasModel(QAbstractTableModel):
         )
 
     def addRow(self, value):
-        self._data = self._data.pipe(lambda x: pd.concat([x, value], ignore_index=True))
+        self._data = (
+            self._data
+                .pipe(lambda x: pd.concat([x, value], ignore_index=True))
+                .fillna(' ')
+        )
         self.sort()
+        
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
 
