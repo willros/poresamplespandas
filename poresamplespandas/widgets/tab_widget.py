@@ -23,6 +23,8 @@ class TabMenu(QTabWidget):
         self.tabs = {}
         self.mk_file_tab()
         self.mk_barcode_tab(barcodes)
+        self.mk_help_tab()
+
 
     def open_tab(self, input_):
         if self.currentWidget() == self.tabs[input_]:
@@ -69,6 +71,15 @@ class TabMenu(QTabWidget):
         
         self.tabs['file'] = tab
         self.addTab(tab, "file")
-    
+
+    def mk_help_tab(self):
+        tab = QWidget()
+        tab.setContentsMargins(0, 0, 0, 0)
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel('help'))
+        tab.setLayout(layout)
+        self.tabs['help'] = tab
+        self.addTab(tab, "help")
+
         
 
