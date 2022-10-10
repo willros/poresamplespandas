@@ -150,7 +150,6 @@ class SampleTableView(QTableView):
         
     def undo_barcodes(self):
         # change back the data and the barcodes
-        print(self.data_before)
         self.model()._data = self.data_before
         self.main_window.barcode_df = self.barcodes_before
 

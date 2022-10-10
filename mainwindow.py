@@ -39,6 +39,7 @@ from poresamplespandas.widgets.tab_widget import TabMenu
 from poresamplespandas.widgets.data_widget import DataWidget
 from poresamplespandas.views.sample_table_view import SampleTableView
 from poresamplespandas.import_data.import_analytix import import_analytix
+from poresamplespandas.enums.enums import VERTICAL_HEADER
 
 VERSION = "PORESAMPLESPANDAS"
 
@@ -238,6 +239,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # filter and save the file
         (self.source_model._data
          .drop(columns=['order'])
+         .assign(plate_position=lambda x: VERTICAL_HEADER[:x.shape[0]])
          .to_csv(filename, index=False)
         )
         
