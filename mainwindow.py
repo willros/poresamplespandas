@@ -92,8 +92,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                      mainwindow=self)
         
         # shortcuts
-        self.undo_barcode = QShortcut(QKeySequence("Ctrl+Z"), self)
-        self.undo_barcode.activated.connect(self.sample_table_view.undo_barcodes)
+        self.undo_barcode = None
+        self.undo()
         
         # layout 
         self.horizontalLayout.addWidget(self.tabWidget)
@@ -274,6 +274,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.add_data_to_plate_widget()
             self._hide_columns()
             self.removed_samples.clear()
+            #update the last state so that ctrl z works
+            self.undo()
+            
+    # why is not this updated when new data is read in????
+    def undo(self):
+        self.sample_table_view.last_state()
+        #remove the old
+        if self.undo_barcode:
+            self.undo_barcode.setParent(None)
+            self.undo_barcode.deleteLater()
+            self.undo_barcode = None
+        self.undo_barcode = QShortcut(QKeySequence("Ctrl+Z"), self)
+        self.undo_barcode.activated.connect(self.sample_table_view.undo_barcodes)
 
             
 

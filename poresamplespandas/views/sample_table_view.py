@@ -42,7 +42,6 @@ class SampleTableView(QTableView):
         # Drag and drop
         self.setDropIndicatorShown(True)
         self.setAcceptDrops(True)
-                
 
     def remove_and_store(self):
         """Removes highlighted rows from the view and stores them in the list of removed rows"""
@@ -109,8 +108,7 @@ class SampleTableView(QTableView):
         )
         
         # to undo adding of the barcodes
-        self.barcodes_before = self.main_window.barcode_df.copy()
-        self.data_before = self.model()._data.copy()
+        self.last_state()
         
         chosen_barcodes = self.main_window.barcode_df.loc[index_slice, 'bc'].to_list()
         chosen_kit = self.main_window.barcode_df.loc[index_slice, 'kit'].to_list()
@@ -152,6 +150,7 @@ class SampleTableView(QTableView):
         
     def undo_barcodes(self):
         # change back the data and the barcodes
+        print(self.data_before)
         self.model()._data = self.data_before
         self.main_window.barcode_df = self.barcodes_before
 
@@ -163,4 +162,9 @@ class SampleTableView(QTableView):
         self.model().dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.model().layoutChanged.emit()
         self.main_window.add_data_to_plate_widget()
+        
+    def last_state(self):
+         # to undo adding of the barcodes
+        self.barcodes_before = self.main_window.barcode_df.copy()
+        self.data_before = self.model()._data.copy()
 
