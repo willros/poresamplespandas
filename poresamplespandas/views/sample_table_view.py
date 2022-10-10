@@ -108,6 +108,10 @@ class SampleTableView(QTableView):
             else slice(indexes[0].row(), indexes[0].row())
         )
         
+        # to undo adding of the barcodes
+        self.barcodes_before = self.main_window.barcode_df.copy()
+        self.data_before = self.model()._data.copy()
+        
         chosen_barcodes = self.main_window.barcode_df.loc[index_slice, 'bc'].to_list()
         chosen_kit = self.main_window.barcode_df.loc[index_slice, 'kit'].to_list()
     
@@ -123,7 +127,7 @@ class SampleTableView(QTableView):
         self.model()._data.loc[rows_to_add, 'barcodes'] = chosen_barcodes
         self.model()._data.loc[rows_to_add, 'kit'] = chosen_kit
         
-        # remove barcodes from barcodes list 
+        # remove barcodes from barcodes df 
         index_slice_drop = (
             slice(indexes[0].row(), indexes[-1].row() + 1)
             if len(indexes) > 1
@@ -145,3 +149,18 @@ class SampleTableView(QTableView):
         
         # Find the index and row of the QListWidgetItems:
         #barcode_row = e.source().currentIndex().row()
+        
+    def undo_barcodes(self):
+        # change back the data and the barcodes
+        self.model()._data = self.data_before
+        self.main_window.barcode_df = self.barcodes_before
+
+        # update the barcode list
+        self.main_window.update_barcodes_to_barcodelist()
+
+        # update the data 
+        self.model().update_color_list()
+        self.model().dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+        self.model().layoutChanged.emit()
+        self.main_window.add_data_to_plate_widget()
+

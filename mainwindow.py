@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
     QAbstractItemView,
     QListWidgetItem,
     QMainWindow,
-    QFileDialog
+    QFileDialog,
 )
 from PySide6.QtCore import (
     QAbstractTableModel,
@@ -29,7 +29,8 @@ from PySide6.QtCore import (
     QPoint,
 )
 from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QShortcut, QKeySequence
+
 
 import qtawesome as qta
 
@@ -89,6 +90,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
                                      table_widget=self.table_widget,
                                      mainwindow=self)
+        
+        # shortcuts
+        self.undo_barcode = QShortcut(QKeySequence("Ctrl+Z"), self)
+        self.undo_barcode.activated.connect(self.sample_table_view.undo_barcodes)
         
         # layout 
         self.horizontalLayout.addWidget(self.tabWidget)
@@ -222,7 +227,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.tabWidget.button_close.clicked.connect(self.on_close)
         self.tabWidget.button_export.clicked.connect(self.on_export)
 
-    
     # functions for setup_signals
     def on_export(self):
         filename, _ = QFileDialog.getSaveFileName(
