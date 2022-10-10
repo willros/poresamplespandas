@@ -174,7 +174,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 item.setBackground(QtGui.QColor("#fc9b90"))
             else:
                 item.setBackground(QtGui.QColor("#b3d0ff"))
-
+            
+            # truncated division and modulo for pushing the correct column
             self.table_widget.setItem(number % 8, number // 8, item)
             number += 1
             if number > 12 * 8:
@@ -207,7 +208,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             .drop(index=sample_index)
             .reset_index(drop=True)
         )
-
         self.add_data_to_plate_widget()
         
     def update_barcodes_to_barcodelist(self):
@@ -237,7 +237,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          .to_csv(filename, index=False)
         )
         
-    # TODO CLEAN THE CURRENT MODEL AND EVERYTHING AROUND IT WHEN READING IN NEW DATA 
     def on_import(self):
         indata, _ = QFileDialog.getOpenFileName(
             self,
@@ -247,70 +246,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         
         if indata: # and 'analytix' in indata:
+            filename = indata
             indata = import_analytix(Path(indata).resolve())
             
-            
             # call this setup_new_data function or something??????
+            # create new models and sample views
             self.create_model(model=self.input_model, data=indata)
             self.sample_table_view = SampleTableView(mainwindow=self)
             self.sample_table_view.setModel(self.source_model)
             
             # delete the old data widget
             self.horizontalLayout.removeWidget(self.datawidget)
+            # delete later was the key for removing the widget 
             self.datawidget.deleteLater()
             self.datawidget = None
             
+            # add new datawidgets and update things
             self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
                                      table_widget=self.table_widget,
-                                     mainwindow=self)
-            
-            self.removed_samples.clear()
+                                     mainwindow=self,
+                                     name_of_file=filename)
             self.horizontalLayout.addWidget(self.datawidget)
             self.add_data_to_plate_widget()
+            self._hide_columns()
+            self.removed_samples.clear()
+
             
 
 
-#    def on_save(self):
-#        r_count = self.model.rowCount()
-#        c_count = self.model.columnCount()
-#        data = {}
-#
-#        for c in range(c_count):
-#            field = self.model.headerData(c, Qt.Horizontal, Qt.DisplayRole)
-#            _col_data = []
-#            for r in range(r_count):
-#                idx = self.model.index(r, c)
-#                _col_data.append(self.model.data(idx, Qt.DisplayRole))
-#
-#            data[field] = _col_data
-#
-#        df = pd.DataFrame(data)
-#
-#        print(df.to_string())
-#
-#        fname, _ = QFileDialog.getSaveFileName(
-#            self,
-#            "Save data",
-#            "C:/Dev/PyCharmProjects/poresamples/demo",
-#            "pickle file (*.pkl)",
-#        )
-#
-#        if fname:
-#            df.to_pickle(fname)
-#
-#    def on_open(self):
-#        filename, _ = QFileDialog.getOpenFileName(
-#            self,
-#            "Open file",
-#            "C:/Dev/PyCharmProjects/poresamples/demo",
-#            "data pickle (*.pkl)",
-#        )
-#
-#        if not filename:
-            #return None
-
-#        df = pd.read_pickle(fname)
-         # clear the barcodes, plate and Everything! 
-         # set everything up again, with models and data and barcodes? 
-#        self.setup_data(df)
-#

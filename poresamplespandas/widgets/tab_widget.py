@@ -56,33 +56,14 @@ class TabMenu(QTabWidget):
         self.button_import.setIcon(qta.icon("fa5s.file-import", color='white'))
         self.button_import.setStyleSheet("QPushButton { text-align: left; }")
 
-        self.button_open = QPushButton("Open data")
-        self.button_open.setStatusTip("Open data file")
-        self.button_open.setIcon(qta.icon("fa5s.file-upload", color='white'))
-        self.button_open.setStyleSheet("QPushButton { text-align: left; }")
-
-        self.button_save = QPushButton("Save data")
-        self.button_save.setStatusTip("Save data file")
-        self.button_save.setIcon(qta.icon("fa5s.file-download", color='white'))
-        self.button_save.setStyleSheet("QPushButton { text-align: left; }")
-
         self.button_export = QPushButton("Export sheet")
         self.button_export.setStatusTip("Export samplesheet")
         self.button_export.setIcon(qta.icon("fa5s.file-export", color='white'))
         self.button_export.setStyleSheet("QPushButton { text-align: left; }")
 
-        self.button_close = QPushButton("Close data")
-        self.button_close.setStatusTip("Close data")
-        self.button_close.setIcon(qta.icon("fa5s.file-excel", color='white'))
-        self.button_close.setStyleSheet("QPushButton { text-align: left; }")
-        
         # add to layout:
         layout.addWidget(self.button_import)
-        layout.addWidget(self.button_open)
-        layout.addWidget(self.button_save)
         layout.addWidget(self.button_export)
-        layout.addWidget(self.button_close)
-
         layout.addSpacerItem(self.vs)
         tab.setLayout(layout)
         

@@ -11,7 +11,8 @@ class DataWidget(QWidget):
     def __init__(self, 
                  sample_table_view: QTableView,
                  table_widget: QTableWidget,
-                 mainwindow: QMainWindow) -> None:
+                 mainwindow: QMainWindow,
+                 name_of_file: str = None) -> None:
         super(DataWidget, self).__init__()            
         
         # main window:
@@ -38,6 +39,9 @@ class DataWidget(QWidget):
         bhbox = QHBoxLayout()
         tvbox = QVBoxLayout()
         hspacer = QSpacerItem(5, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        
+        # name of the file
+        self.filename = QLabel(name_of_file) or QLabel('Current file')
 
         # add to layout
         bvbox.setContentsMargins(0, 0, 0, 0)
@@ -57,6 +61,9 @@ class DataWidget(QWidget):
         bvbox.insertLayout(0, bhbox)
         bvbox.addWidget(sample_table_view)
         bottom_widget.setLayout(bvbox)
+        # add the name of the file
+        tvbox.addWidget(QLabel('Currently working on file:'))
+        tvbox.addWidget(self.filename)
         tvbox.addWidget(table_widget)
         top_widget.setLayout(tvbox)
         top_widget.setMaximumHeight(250)
