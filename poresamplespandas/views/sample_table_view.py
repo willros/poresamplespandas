@@ -99,6 +99,7 @@ class SampleTableView(QTableView):
         else:
             e.ignore()
 
+    # dropping barcodes
     def dropEvent(self, e): 
         indexes = e.source().selectionModel().selectedRows()
         index_slice = (

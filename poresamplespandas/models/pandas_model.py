@@ -201,19 +201,13 @@ class PandasModel(QAbstractTableModel):
         if not index.isValid():
             return False
 
-        if index.column() == self.find_column_index("age"):
-            try:
-                value = int(value)
-            except ValueError:
-                return False
-
         self._data.iloc[index.row(), index.column()] = value
         self.sort()
         self.dataChanged.emit(index, index)
         return True
 
     def flags(self, index):
-        if index.column() in [self.find_column_index("age")]:
+        if index.column() in [self.find_column_index("comment")]:
             return (
                 QtCore.Qt.ItemIsEnabled
                 | QtCore.Qt.ItemIsSelectable

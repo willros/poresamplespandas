@@ -1,6 +1,6 @@
-sample_id,order,age,barcodes,kit
-21COR002448,0,87.0, , 
-21COR002481,0,34.0, , 
-21COR002525,0,36.0, , 
-21COR002431,0,44.0, , 
-21COR002478,0,44.0, , 
+sample_id,order,age,barcodes,kit,comment
+21COR002448,0,87.0, , , 
+21COR002481,0,34.0, , , 
+21COR002525,0,36.0, , , 
+21COR002431,0,44.0, , , 
+21COR002478,0,44.0, , , 
