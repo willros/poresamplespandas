@@ -22,9 +22,9 @@ class DataWidget(QWidget):
         self.neg_button = self.mainwindow.neg_button
         
         # disable buttons before data is loaded
-        self.pos_button.setDisabled(False)
-        self.neg_button.setDisabled(False)
-        self.mainwindow.removed_samples.setDisabled(False)
+        #self.pos_button.setDisabled(False)
+        #self.neg_button.setDisabled(False)
+        #self.mainwindow.removed_samples.setDisabled(False)
             
         # main layout
         self.vbox = QVBoxLayout()

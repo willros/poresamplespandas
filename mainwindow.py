@@ -247,20 +247,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         
         if indata: # and 'analytix' in indata:
-            print(indata)
             indata = import_analytix(Path(indata).resolve())
             
             # call this setup_new_data function or something??????
+            
+            self.sample_table_view.setParent(None)
+            del self.sample_table_view
+            
             self.create_model(model=self.input_model, data=indata)
             self.sample_table_view = SampleTableView(mainwindow=self)
             self.sample_table_view.setModel(self.source_model)
+            
             self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
                                      table_widget=self.table_widget,
                                      mainwindow=self)
             self.removed_samples.clear()
-            self.add_data_to_plate_widget()
-            #clean the horizontal layout first!! 
             self.horizontalLayout.addWidget(self.datawidget)
+            self.add_data_to_plate_widget()
             
 
 
