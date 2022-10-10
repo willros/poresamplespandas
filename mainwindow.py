@@ -95,6 +95,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # shortcuts
         self.undo_barcode = None
         self.undo()
+        self.save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
+        self.save_shortcut.activated.connect(self.on_export)    
         
         # layout 
         self.horizontalLayout.addWidget(self.tabWidget)
