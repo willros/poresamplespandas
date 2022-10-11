@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import (QTabWidget, QWidget, QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel, QFormLayout, QComboBox, QLineEdit, QListWidget)
+from PySide6.QtWidgets import (QTabWidget, QWidget, QVBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QLabel, QFormLayout, QComboBox, QLineEdit, QListWidget, QTextEdit, QTextBrowser)
 from PySide6.QtGui import QAction
 import qtawesome as qta
+
 
 
 class TabMenu(QTabWidget):
@@ -62,10 +63,14 @@ class TabMenu(QTabWidget):
         self.button_export.setStatusTip("Export samplesheet")
         self.button_export.setIcon(qta.icon("fa5s.file-export", color='white'))
         self.button_export.setStyleSheet("QPushButton { text-align: left; }")
+        
+        self.file_type = QLineEdit()
 
         # add to layout:
         layout.addWidget(self.button_import)
         layout.addWidget(self.button_export)
+        layout.addWidget(QLabel("Origin of file to import: "))
+        layout.addWidget(self.file_type)
         layout.addSpacerItem(self.vs)
         tab.setLayout(layout)
         
@@ -76,7 +81,17 @@ class TabMenu(QTabWidget):
         tab = QWidget()
         tab.setContentsMargins(0, 0, 0, 0)
         layout = QVBoxLayout()
-        layout.addWidget(QLabel('help'))
+        
+        logOutput = QTextEdit()
+        logOutput.setReadOnly(True)
+        logOutput.setLineWrapMode(QTextEdit.NoWrap)
+        logOutput.setMarkdown("""
+This is the help text for \n
+poresamples.
+        """)
+        
+
+        layout.addWidget(logOutput)
         tab.setLayout(layout)
         self.tabs['help'] = tab
         self.addTab(tab, "help")
