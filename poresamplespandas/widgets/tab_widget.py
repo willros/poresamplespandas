@@ -64,7 +64,8 @@ class TabMenu(QTabWidget):
         self.button_export.setIcon(qta.icon("fa5s.file-export", color='white'))
         self.button_export.setStyleSheet("QPushButton { text-align: left; }")
         
-        self.file_type = QLineEdit()
+        self.file_type = QComboBox()
+        self.file_type.addItems(['analytix', 'illumina', 'nanopore'])
 
         # add to layout:
         layout.addWidget(self.button_import)
@@ -88,6 +89,12 @@ class TabMenu(QTabWidget):
         logOutput.setMarkdown("""
 This is the help text for \n
 poresamples.
+
+Shortcuts: \n
+
+Save file: Ctrl-S \n
+Open file: Ctrl-O \n
+Regret barcode: Ctrl-Z \n
         """)
         
 

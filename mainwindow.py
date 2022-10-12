@@ -123,12 +123,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_buttons["file"].setCheckable(True)
         self.sb_buttons["file"].triggered.connect(self.on_sb_button_click)
 
-        self.sb_buttons["barcode"].setIcon(qta.icon("ri.barcode-fill"))
+        self.sb_buttons["barcode"].setIcon(qta.icon("ri.barcode-fill", color="red"))
         self.sb_buttons["barcode"].setStatusTip("Barcodes")
         self.sb_buttons["barcode"].setCheckable(True)
         self.sb_buttons["barcode"].triggered.connect(self.on_sb_button_click)
         
-        self.sb_buttons["help"].setIcon(qta.icon("fa5.question-circle"))
+        self.sb_buttons["help"].setIcon(qta.icon("fa5.question-circle", color="blue"))
         self.sb_buttons["help"].setStatusTip("help")
         self.sb_buttons["help"].setCheckable(True)
         self.sb_buttons["help"].triggered.connect(self.on_sb_button_click)
@@ -155,6 +155,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def setup_table_widget(self):
         self.table_widget = QTableWidget(8, 12)
+        # names of rows in the 96 plate well goes from A to H.
         v_header = [QTableWidgetItem(x) for x in "ABCDEFGH"]
         for i, v in enumerate(v_header):
             self.table_widget.setVerticalHeaderItem(i, v)
@@ -262,6 +263,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         
     def on_import(self):
+        importers = {'analytix': import_analytix,
+                     'illumina': None}
+        
         indata, _ = QFileDialog.getOpenFileName(
             self,
             "Open file",
@@ -269,9 +273,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "analytix file (*.csv *.txt)",
         )
         
-        if indata: # and 'analytix' in indata:
+        if indata: 
             filename = indata
-            indata = import_analytix(Path(indata).resolve())
+            current_importer = importers[self.tabWidget.file_type.currentText()]
+            indata = current_importer(Path(indata).resolve())
             
             # call this setup_new_data function or something??????
             # create new models and sample views
