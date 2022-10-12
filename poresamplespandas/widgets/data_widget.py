@@ -66,7 +66,8 @@ class DataWidget(QWidget):
         tvbox.addWidget(self.filename)
         tvbox.addWidget(table_widget)
         top_widget.setLayout(tvbox)
-        top_widget.setMaximumHeight(250)
+        # size of the plate view
+        top_widget.setMaximumHeight(350)
         top_widget.setContentsMargins(0, 0, 0, 10)
         tvbox.setContentsMargins(0, 0, 0, 0)
         self.splitter.addWidget(top_widget)

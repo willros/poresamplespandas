@@ -96,8 +96,7 @@ Save file: Ctrl-S \n
 Open file: Ctrl-O \n
 Regret barcode: Ctrl-Z \n
         """)
-        
-
+    
         layout.addWidget(logOutput)
         tab.setLayout(layout)
         self.tabs['help'] = tab

@@ -235,19 +235,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.add_data_to_plate_widget()
         
-    def update_barcodes_to_barcodelist(self):
+    def update_barcodes_to_barcodelist(self) -> None:
         self.barcode_list.clear()
         for bc in self.barcode_df['bc']:
             self.barcode_list.addItem(bc)
 
-    def file_tab_signals(self):
+    def file_tab_signals(self) -> None:
         self.tabWidget.button_import.clicked.connect(self.on_import)
-        #self.tabWidget.button_save.clicked.connect(self.on_save)
-        #self.tabWidget.button_open.clicked.connect(self.on_open)
-        #self.tabWidget.button_close.clicked.connect(self.on_close)
         self.tabWidget.button_export.clicked.connect(self.on_export)
 
-    # functions for setup_signals
     def on_export(self):
         filename, _ = QFileDialog.getSaveFileName(
             self,
@@ -302,7 +298,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #update the last state so that ctrl z works
             self.undo()
             
-    # why is not this updated when new data is read in????
     def undo(self):
         self.sample_table_view.last_state()
         #remove the old
