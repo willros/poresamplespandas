@@ -128,7 +128,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_buttons["barcode"].setCheckable(True)
         self.sb_buttons["barcode"].triggered.connect(self.on_sb_button_click)
         
-        self.sb_buttons["help"].setIcon(qta.icon("ri.barcode-fill"))
+        self.sb_buttons["help"].setIcon(qta.icon("fa5.question-circle"))
         self.sb_buttons["help"].setStatusTip("help")
         self.sb_buttons["help"].setCheckable(True)
         self.sb_buttons["help"].triggered.connect(self.on_sb_button_click)
