@@ -108,7 +108,6 @@ class PandasModel(QAbstractTableModel):
 
         self._data.iloc[index.row(), index.column()] = value
         self.sort()
-        self.dataChanged.emit(index, index)
         return True
 
     def flags(self, index):

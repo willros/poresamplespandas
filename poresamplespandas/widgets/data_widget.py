@@ -17,16 +17,7 @@ class DataWidget(QWidget):
         
         # main window:
         self.mainwindow = mainwindow
-
-        # button (belong to the main window)
-        self.pos_button = self.mainwindow.pos_button
-        self.neg_button = self.mainwindow.neg_button
-        
-        # disable buttons before data is loaded
-        #self.pos_button.setDisabled(False)
-        #self.neg_button.setDisabled(False)
-        #self.mainwindow.removed_samples.setDisabled(False)
-            
+ 
         # main layout
         self.vbox = QVBoxLayout()
         self.splitter = QSplitter()
@@ -46,15 +37,14 @@ class DataWidget(QWidget):
         # add to layout
         bvbox.setContentsMargins(0, 0, 0, 0)
         bhbox.setContentsMargins(0, 10, 0, 5)
+        # add controls
         bhbox.addWidget(QLabel("+ ctrls"))
-        bhbox.addWidget(self.neg_button)
+        bhbox.addWidget(self.mainwindow.pos_spinbox)
         bhbox.addWidget(self.get_vline())
         bhbox.addWidget(QLabel("- ctrls"))
-        bhbox.addWidget(self.pos_button)
-        bhbox.addWidget(self.get_vline())
+        bhbox.addWidget(self.mainwindow.neg_spinbox)
         bhbox.addWidget(self.get_vline())
         bhbox.addSpacerItem(hspacer)
-        bhbox.addWidget(self.get_vline())
         bhbox.addWidget(self.get_vline())
         bhbox.addWidget(QLabel("restore samples"))
         bhbox.addWidget(self.mainwindow.removed_samples)

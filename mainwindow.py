@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QMainWindow,
     QFileDialog,
+    QSpinBox
 )
 from PySide6.QtCore import (
     QAbstractTableModel,
@@ -65,20 +66,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.update_barcodes_to_barcodelist()  
         self.barcode_list.setMinimumWidth(40)
 
-        # buttons
-        self.pos_button = QtWidgets.QPushButton("Positive")
-        self.pos_button.setObjectName("positiv")
-        self.pos_counter = 0
-        self.neg_button = QtWidgets.QPushButton("Negative")
-        self.neg_button.setObjectName("negativ")
-        self.neg_counter = 0
-        self.setup_action_buttons()
+        # controls 
+        self.pos_spinbox = QSpinBox()
+        self.pos_spinbox.setObjectName("POS")
+        self.neg_spinbox = QSpinBox()
+        self.neg_spinbox.setObjectName("NEG")
+ 
         # should barcodes go here or not??
+        self.setup_action_buttons()
         self.populate_toolbar()
         
         # signals and slots
-        self.pos_button.clicked.connect(self.add_row)
-        self.neg_button.clicked.connect(self.add_row)
+        self.pos_spinbox.valueChanged.connect(self.add_row_spinbox)
+        self.neg_spinbox.valueChanged.connect(self.add_row_spinbox)
+
         self.removed_samples.activated.connect(self.restore_removed_samples)
         self.file_tab_signals()
         
@@ -162,29 +163,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         header = self.table_widget.verticalHeader()
         header.setVisible(True)
         self.add_data_to_plate_widget()
+        
+        
+    def add_row_spinbox(self, text):
+        # helper function
+        def add_controls(name):
+            controls = []
+            sort_order = -1 if name == "POS" else 1
+            # clean the model dataframe from all controls 
+            self.source_model._data = self.source_model._data.loc[lambda x: ~x.sample_id.str.contains(name)]
+            #update the model to show correct dataframe
+            self.source_model.sort()
+            self.add_data_to_plate_widget()
 
-    def add_row(self, text):
+            # Do not do anything if the user has not set the control to anything 
+            if int(text) == 0:
+                return None
+
+            for i in range(1, int(text) + 1):
+                new_df = (pd.DataFrame()
+                          .assign(
+                              sample_id=[f"{name}_CTRL{i}"], 
+                              order=[sort_order]
+                          )
+                )
+                controls.append(new_df)
+            self.source_model.addRow(pd.concat(controls))
+            self.add_data_to_plate_widget()
+            
+
         name = self.sender().objectName()
-        if name == "positiv":
-            new_df = (
-                pd.DataFrame()
-                .assign(
-                    sample_id=[f"POS_NY_{self.pos_counter}"], 
-                    order=[-1]
-                )
-            )
-            self.pos_counter += 1
-        elif name == "negativ":
-            new_df = (
-                pd.DataFrame()
-                .assign(
-                    sample_id=[f"NEG_NY_{self.neg_counter}"],
-                    order=[1]
-                )
-            )
-            self.neg_counter += 1
-        self.source_model.addRow(new_df)
-        self.add_data_to_plate_widget()
+        add_controls(name)
+       
 
     def add_data_to_plate_widget(self):
         self.table_widget.clearContents()
