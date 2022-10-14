@@ -33,6 +33,9 @@ class DataWidget(QWidget):
         
         # name of the file
         self.filename = QLabel(name_of_file) or QLabel('Current file')
+        
+        # refresh barcode button
+        self.refresh_barcodes = QPushButton("Refresh barcodes")
 
         # add to layout
         bvbox.setContentsMargins(0, 0, 0, 0)
@@ -44,6 +47,7 @@ class DataWidget(QWidget):
         bhbox.addWidget(QLabel("- ctrls"))
         bhbox.addWidget(self.mainwindow.neg_spinbox)
         bhbox.addWidget(self.get_vline())
+        bhbox.addWidget(self.refresh_barcodes)
         bhbox.addSpacerItem(hspacer)
         bhbox.addWidget(self.get_vline())
         bhbox.addWidget(QLabel("restore samples"))

@@ -3,7 +3,6 @@
 import sys
 import pandas as pd
 from pathlib import Path
-import yaml
 
 from PySide6.QtWidgets import (
     QTableView,
@@ -19,7 +18,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QMainWindow,
     QFileDialog,
-    QSpinBox
+    QSpinBox,
 )
 from PySide6.QtCore import (
     QAbstractTableModel,
@@ -46,64 +45,66 @@ from poresamplespandas.import_data.import_barcodes import make_barcodes_df
 
 VERSION = "PORESAMPLESPANDAS"
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, 
-                 model: QtCore.QAbstractTableModel,
-                 data: str,
-                 barcodes: str):
+    def __init__(self, model: QtCore.QAbstractTableModel, data: str, barcodes: str):
         super(MainWindow, self).__init__()
         self.setupUi(self)
 
         self.setWindowTitle(f"poresamples {VERSION}")
         self.setWindowIcon(qta.icon("mdi6.cube-outline"))
-        
+
         # removed samples
         self.removed_samples = QComboBox()
-        
+
         # barcodes
-        self.barcode_df = make_barcodes_df(barcodes)
+        self.barcode_file = barcodes
+        self.barcode_df = make_barcodes_df(self.barcode_file)
         self.barcode_list = QListWidget()
         self.barcode_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.barcode_list.setDragEnabled(True)
-        self.update_barcodes_to_barcodelist()  
+        self.update_barcodes_to_barcodelist()
         self.barcode_list.setMinimumWidth(40)
 
-        # controls 
+        # controls
         self.pos_spinbox = QSpinBox()
         self.pos_spinbox.setObjectName("POS")
         self.neg_spinbox = QSpinBox()
         self.neg_spinbox.setObjectName("NEG")
- 
+
         # should barcodes go here or not??
         self.setup_action_buttons()
         self.populate_toolbar()
-        
-        # signals and slots
-        self.pos_spinbox.valueChanged.connect(self.add_row_spinbox)
-        self.neg_spinbox.valueChanged.connect(self.add_row_spinbox)
 
-        self.removed_samples.activated.connect(self.restore_removed_samples)
-        self.file_tab_signals()
-        
+
         # data widget, source model, sample table view and table widget
         self.input_model = model
         self.create_model(model=model, data=data)
         self.sample_table_view = SampleTableView(mainwindow=self)
         self.sample_table_view.setModel(self.source_model)
         self.setup_table_widget()
-        self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
-                                     table_widget=self.table_widget,
-                                     mainwindow=self)
+        self.datawidget = DataWidget(
+            sample_table_view=self.sample_table_view,
+            table_widget=self.table_widget,
+            mainwindow=self,
+        )
         
+        # signals and slots
+        self.pos_spinbox.valueChanged.connect(self.add_row_spinbox)
+        self.neg_spinbox.valueChanged.connect(self.add_row_spinbox)
+        self.removed_samples.activated.connect(self.restore_removed_samples)
+        self.file_tab_signals()
+        self.datawidget.refresh_barcodes.clicked.connect(self.refresh_barcodes)
+
         # shortcuts
         self.undo_barcode = None
         self.undo()
         self.save_shortcut = QShortcut(QKeySequence("Ctrl+S"), self)
-        self.save_shortcut.activated.connect(self.on_export)    
+        self.save_shortcut.activated.connect(self.on_export)
         self.open_shortcut = QShortcut(QKeySequence("Ctrl+O"), self)
-        self.open_shortcut.activated.connect(self.on_import)    
-        
-        # layout 
+        self.open_shortcut.activated.connect(self.on_import)
+
+        # layout
         self.horizontalLayout.addWidget(self.tabWidget)
         self.horizontalLayout.addWidget(self.datawidget)
         self._hide_columns()
@@ -119,7 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_buttons = {
             "file": QAction("file", self),
             "barcode": QAction("barcode", self),
-            "help": QAction("help", self)
+            "help": QAction("help", self),
         }
         self.sb_buttons["file"].setIcon(qta.icon("fa5.file"))
         self.sb_buttons["file"].setStatusTip("Files")
@@ -130,7 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sb_buttons["barcode"].setStatusTip("Barcodes")
         self.sb_buttons["barcode"].setCheckable(True)
         self.sb_buttons["barcode"].triggered.connect(self.on_sb_button_click)
-        
+
         self.sb_buttons["help"].setIcon(qta.icon("fa5.question-circle", color="blue"))
         self.sb_buttons["help"].setStatusTip("help")
         self.sb_buttons["help"].setCheckable(True)
@@ -144,18 +145,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for name, button in self.sb_buttons.items():
             if name != tab_name and button.isChecked():
                 button.setChecked(False)
-    
-    # TODO add different importers 
-    def create_model(
-        self, 
-        model: QtCore.QAbstractTableModel, 
-        data: str
-        ) -> None:
+
+    # TODO add different importers
+    def create_model(self, model: QtCore.QAbstractTableModel, data: str) -> None:
         """Creates a model and returns it"""
         if not isinstance(data, pd.DataFrame):
             data = pd.read_csv(data)
         self.source_model = model(data)
-    
+
     def setup_table_widget(self):
         self.table_widget = QTableWidget(8, 12)
         # names of rows in the 96 plate well goes from A to H.
@@ -165,38 +162,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         header = self.table_widget.verticalHeader()
         header.setVisible(True)
         self.add_data_to_plate_widget()
-        
-        
+
     def add_row_spinbox(self, text):
         # helper function
         def add_controls(name):
             controls = []
             sort_order = -1 if name == "POS" else 1
-            # clean the model dataframe from all controls 
-            self.source_model._data = self.source_model._data.loc[lambda x: ~x.sample_id.str.contains(name)]
-            #update the model to show correct dataframe
+            # clean the model dataframe from all controls
+            self.source_model._data = self.source_model._data.loc[
+                lambda x: ~x.sample_id.str.contains(name)
+            ]
+            # update the model to show correct dataframe
             self.source_model.sort()
             self.add_data_to_plate_widget()
 
-            # Do not do anything if the user has not set the control to anything 
+            # Do not do anything if the user has not set the control to anything
             if int(text) == 0:
                 return None
 
             for i in range(1, int(text) + 1):
-                new_df = (pd.DataFrame()
-                          .assign(
-                              sample_id=[f"{name}_CTRL{i}"], 
-                              order=[sort_order]
-                          )
+                new_df = pd.DataFrame().assign(
+                    sample_id=[f"{name}_CTRL{i}"], order=[sort_order]
                 )
                 controls.append(new_df)
             self.source_model.addRow(pd.concat(controls))
             self.add_data_to_plate_widget()
-            
 
         name = self.sender().objectName()
         add_controls(name)
-       
 
     def add_data_to_plate_widget(self):
         self.table_widget.clearContents()
@@ -211,13 +204,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 item.setBackground(QtGui.QColor("#fc9b90"))
             else:
                 item.setBackground(QtGui.QColor("#b3d0ff"))
-            
+
             # truncated division and modulo for pushing the correct column
             self.table_widget.setItem(number % 8, number // 8, item)
             number += 1
             if number > 12 * 8:
                 break
-                
+
     def _hide_columns(self):
         """
         Hide columns from the TableViews
@@ -241,15 +234,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # drop the rows from the removed_samples_df
         self.source_model.removed_samples_df = (
-            self.source_model.removed_samples_df
-            .drop(index=sample_index)
-            .reset_index(drop=True)
+            self.source_model.removed_samples_df.drop(index=sample_index).reset_index(
+                drop=True
+            )
         )
         self.add_data_to_plate_widget()
-        
+
     def update_barcodes_to_barcodelist(self) -> None:
         self.barcode_list.clear()
-        for bc in self.barcode_df['whole_name']:
+        for bc in self.barcode_df["whole_name"]:
             self.barcode_list.addItem(bc)
 
     def file_tab_signals(self) -> None:
@@ -264,62 +257,82 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "csv file (*.csv)",
         )
         # filter and save the file
-        (self.source_model._data
-         .drop(columns=['order'])
-         .assign(plate_position=lambda x: VERTICAL_HEADER[:x.shape[0]])
-         .to_csv(filename, index=False)
+        (
+            self.source_model._data.drop(columns=["order"])
+            .assign(plate_position=lambda x: VERTICAL_HEADER[: x.shape[0]])
+            .to_csv(filename, index=False)
         )
-        
+
     def on_import(self):
-        importers = {'analytix': import_analytix,
-                     'illumina': None}
-        
+        importers = {"analytix": import_analytix, "illumina": None}
+
         indata, _ = QFileDialog.getOpenFileName(
             self,
             "Open file",
             "/Users/wiro0005/Desktop",
             "analytix file (*.csv *.txt)",
         )
-        
-        if indata: 
+
+        if indata:
             filename = indata
             current_importer = importers[self.tabWidget.file_type.currentText()]
             indata = current_importer(Path(indata).resolve())
+
+            # setup new data
+            self.setup_new_data(indata, filename)
             
-            # call this setup_new_data function or something??????
-            # create new models and sample views
-            self.create_model(model=self.input_model, data=indata)
-            self.sample_table_view = SampleTableView(mainwindow=self)
-            self.sample_table_view.setModel(self.source_model)
-            
-            # delete the old data widget
-            self.horizontalLayout.removeWidget(self.datawidget)
-            # delete later was the key for removing the widget 
-            self.datawidget.deleteLater()
-            self.datawidget = None
-            
-            # add new datawidgets and update things
-            self.datawidget = DataWidget(sample_table_view=self.sample_table_view,
-                                     table_widget=self.table_widget,
-                                     mainwindow=self,
-                                     name_of_file=filename)
-            self.horizontalLayout.addWidget(self.datawidget)
-            self.add_data_to_plate_widget()
-            self._hide_columns()
-            self.removed_samples.clear()
-            #update the last state so that ctrl z works
-            self.undo()
-            
+
     def undo(self):
         self.sample_table_view.last_state()
-        #remove the old
+        # remove the old
         if self.undo_barcode:
             self.undo_barcode.setParent(None)
             self.undo_barcode.deleteLater()
             self.undo_barcode = None
         self.undo_barcode = QShortcut(QKeySequence("Ctrl+Z"), self)
         self.undo_barcode.activated.connect(self.sample_table_view.undo_barcodes)
+        
+    def setup_new_data(self, indata: pd.DataFrame, filename: str):
+        """
+        When reading in new data everything needs to be flushed and set up again
+        """
+        # create new models and sample views
+        self.create_model(model=self.input_model, data=indata)
+        self.sample_table_view = SampleTableView(mainwindow=self)
+        self.sample_table_view.setModel(self.source_model)
 
-            
+        # delete the old data widget
+        self.horizontalLayout.removeWidget(self.datawidget)
+        # delete later was the key for removing the widget
+        self.datawidget.deleteLater()
+        self.datawidget = None
 
-
+        # add new datawidgets and update things
+        self.datawidget = DataWidget(
+            sample_table_view=self.sample_table_view,
+            table_widget=self.table_widget,
+            mainwindow=self,
+            name_of_file=filename,
+        )
+        self.horizontalLayout.addWidget(self.datawidget)
+        self.add_data_to_plate_widget()
+        self._hide_columns()
+        self.removed_samples.clear()
+        # update the last state so that ctrl z works
+        
+        #refresh barcodes
+        self.refresh_barcodes()
+        self.undo()
+        
+    def refresh_barcodes(self):
+        """
+        Refreshes and reloads barcodes. Starts everything over from scratch.
+        """
+        # remove all barcodes from model dataframe
+        self.source_model._data = (self.source_model._data
+                                   .assign(barcodes=" ",
+                                           kit=" ")
+                                  )
+        self.source_model.sort()
+        self.barcode_df = make_barcodes_df(self.barcode_file)
+        self.update_barcodes_to_barcodelist()
