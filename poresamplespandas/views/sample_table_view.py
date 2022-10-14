@@ -110,7 +110,7 @@ class SampleTableView(QTableView):
         # to undo adding of the barcodes
         self.last_state()
         
-        chosen_barcodes = self.main_window.barcode_df.loc[index_slice, 'bc'].to_list()
+        chosen_barcodes = self.main_window.barcode_df.loc[index_slice, 'name'].to_list()
         chosen_kit = self.main_window.barcode_df.loc[index_slice, 'kit'].to_list()
     
         #row to start insert of the model

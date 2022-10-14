@@ -10,7 +10,7 @@ def main():
     app = QApplication(sys.argv)
     mw = MainWindow(model=PandasModel,
                     data='config/new_test.csv',
-                    barcodes='config/barcodes.csv')
+                    barcodes='config/barcodes.yaml')
     mw.show()
     app.exec()
 

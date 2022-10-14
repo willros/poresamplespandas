@@ -41,6 +41,8 @@ from poresamplespandas.widgets.data_widget import DataWidget
 from poresamplespandas.views.sample_table_view import SampleTableView
 from poresamplespandas.import_data.import_analytix import import_analytix
 from poresamplespandas.enums.enums import VERTICAL_HEADER
+from poresamplespandas.import_data.import_barcodes import make_barcodes_df
+
 
 VERSION = "PORESAMPLESPANDAS"
 
@@ -59,7 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.removed_samples = QComboBox()
         
         # barcodes
-        self.barcode_df = pd.read_csv(barcodes)
+        self.barcode_df = make_barcodes_df(barcodes)
         self.barcode_list = QListWidget()
         self.barcode_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.barcode_list.setDragEnabled(True)
@@ -247,7 +249,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def update_barcodes_to_barcodelist(self) -> None:
         self.barcode_list.clear()
-        for bc in self.barcode_df['bc']:
+        for bc in self.barcode_df['whole_name']:
             self.barcode_list.addItem(bc)
 
     def file_tab_signals(self) -> None:
