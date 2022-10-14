@@ -322,6 +322,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         #refresh barcodes
         self.refresh_barcodes()
+        self.datawidget.refresh_barcodes.clicked.connect(self.refresh_barcodes)
         self.undo()
         
     def refresh_barcodes(self):
