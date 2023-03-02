@@ -76,7 +76,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_action_buttons()
         self.populate_toolbar()
 
-
         # data widget, source model, sample table view and table widget
         self.input_model = model
         self.create_model(model=model, data=data)
@@ -88,7 +87,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             table_widget=self.table_widget,
             mainwindow=self,
         )
-        
+
         # signals and slots
         self.pos_spinbox.valueChanged.connect(self.add_row_spinbox)
         self.neg_spinbox.valueChanged.connect(self.add_row_spinbox)
@@ -182,7 +181,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             for i in range(1, int(text) + 1):
                 new_df = pd.DataFrame().assign(
-                    sample_id=[f"{name}_CTRL{i}"], order=[sort_order]
+                    sample_id=[f"{name}_CTRL{i}"], order=[sort_order], comment=[f"{name} Control"]
                 )
                 controls.append(new_df)
             self.source_model.addRow(pd.concat(controls))
@@ -280,7 +279,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # setup new data
             self.setup_new_data(indata, filename)
-            
 
     def undo(self):
         self.sample_table_view.last_state()
@@ -291,7 +289,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.undo_barcode = None
         self.undo_barcode = QShortcut(QKeySequence("Ctrl+Z"), self)
         self.undo_barcode.activated.connect(self.sample_table_view.undo_barcodes)
-        
+
     def setup_new_data(self, indata: pd.DataFrame, filename: str):
         """
         When reading in new data everything needs to be flushed and set up again
@@ -319,21 +317,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._hide_columns()
         self.removed_samples.clear()
         # update the last state so that ctrl z works
-        
-        #refresh barcodes
+
+        # refresh barcodes
         self.refresh_barcodes()
         self.datawidget.refresh_barcodes.clicked.connect(self.refresh_barcodes)
         self.undo()
-        
+
     def refresh_barcodes(self):
         """
         Refreshes and reloads barcodes. Starts everything over from scratch.
         """
         # remove all barcodes from model dataframe
-        self.source_model._data = (self.source_model._data
-                                   .assign(barcodes=" ",
-                                           kit=" ")
-                                  )
+        self.source_model._data = self.source_model._data.assign(barcodes=" ", kit=" ")
         self.source_model.sort()
         self.barcode_df = make_barcodes_df(self.barcode_file)
         self.update_barcodes_to_barcodelist()

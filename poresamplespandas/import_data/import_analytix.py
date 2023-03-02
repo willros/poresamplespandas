@@ -2,15 +2,16 @@ import pandas as pd
 
 column_names = {
     "Beställarkod": "client",
-    "Kön" :"sex",
+    "Kön": "sex",
     "Prov ID": "sample_name",
     "Provdatum": "sample_date",
     "Analys": "analysis",
     "Ålder (vid provtagning)": "age",
     "ProvNr": "sample_id",
     "Godkännandedatum": "apprvl_date",
-    "Resultat": "result"
+    "Resultat": "result",
 }
+
 
 def import_analytix(input_file: str) -> pd.DataFrame:
     """
@@ -18,16 +19,12 @@ def import_analytix(input_file: str) -> pd.DataFrame:
     :param input_file: str. Path to Analytix file.
     :returns: pd.DataFrame. Cleaned dataframe.
     """
-    return (pd.read_csv(input_file, sep=';')
-     .rename(columns=column_names)
-     .dropna()
-     # add new columns
-    .assign(order=0,
-            barcodes=' ',
-            kit=' ',
-            flowcell=' ',
-            comment=' ')
-    # order and filter the columns
-    [['sample_id', 'barcodes', 'kit', 'flowcell', 'sex', 'age', 'comment', 'order']]
-   )
-    
+    return (
+        pd.read_csv(input_file, sep=";")
+        .rename(columns=column_names)
+        .dropna()
+        # add new columns
+        .assign(order=0, barcodes=" ", kit=" ", flowcell=" ", comment=" ")
+        # order and filter the columns
+        [["sample_id", "barcodes", "kit", "flowcell", "sex", "age", "comment", "order"]]
+    )

@@ -1,4 +1,6 @@
 import pandas as pd
+from natsort import natsort_keygen
+
 
 from PySide6.QtWidgets import (
     QTableView,
@@ -11,7 +13,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QListWidget,
     QAbstractItemView,
-    QListWidgetItem
+    QListWidgetItem,
 )
 from PySide6.QtCore import (
     QAbstractTableModel,
@@ -43,7 +45,6 @@ class PandasModel(QAbstractTableModel):
         self.sortby = {"order": True, "sample_id": True}
         self.removed_samples_df = pd.DataFrame()
         self.sort()
-        
 
     # drag and drop
     def supportedDropActions(self):
@@ -117,22 +118,21 @@ class PandasModel(QAbstractTableModel):
                 | QtCore.Qt.ItemIsSelectable
                 | QtCore.Qt.ItemIsEditable
             )
-        
-        # flags for allowing dropped item etc. 
-        return (QtCore.Qt.ItemIsEnabled 
-                | QtCore.Qt.ItemIsSelectable 
-                | Qt.ItemIsDragEnabled 
-                | Qt.ItemIsDropEnabled 
+
+        # flags for allowing dropped item etc.
+        return (
+            QtCore.Qt.ItemIsEnabled
+            | QtCore.Qt.ItemIsSelectable
+            | Qt.ItemIsDragEnabled
+            | Qt.ItemIsDropEnabled
         )
 
     def addRow(self, value):
-        self._data = (
-            self._data
-                .pipe(lambda x: pd.concat([x, value], ignore_index=True))
-                .fillna(' ')
-        )
+        self._data = self._data.pipe(
+            lambda x: pd.concat([x, value], ignore_index=True)
+        ).fillna(" ")
         self.sort()
-        
+
         self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.layoutChanged.emit()
 
@@ -140,9 +140,9 @@ class PandasModel(QAbstractTableModel):
         if self.sortby:
             columns = [col for col in self.sortby.keys()]
             order = [x for x in self.sortby.values()]
-            self._data = self._data.sort_values(columns, ascending=order).reset_index(
-                drop=True
-            )
+            self._data = self._data.sort_values(
+                columns, ascending=order, key=natsort_keygen()
+            ).reset_index(drop=True)
             self.update_color_list()
             self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
             self.layoutChanged.emit()

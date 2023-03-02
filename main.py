@@ -5,12 +5,12 @@ from pathlib import Path
 
 from poresamplespandas.models.pandas_model import PandasModel
 
-   
+
 def main():
     app = QApplication(sys.argv)
-    mw = MainWindow(model=PandasModel,
-                    data='config/new_test.csv',
-                    barcodes='config/barcodes.yaml')
+    mw = MainWindow(
+        model=PandasModel, data="config/new_test.csv", barcodes="config/barcodes.yaml"
+    )
     mw.show()
     app.exec()
 
