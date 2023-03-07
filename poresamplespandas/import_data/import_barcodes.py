@@ -16,3 +16,17 @@ def make_barcodes_df(file: str) -> pd.DataFrame:
         .rename(columns={"index": "name"})
         .assign(whole_name=lambda x: x.kit + " --- " + x.name)
     )
+
+
+def make_barcodes_df2(file) -> pd.DataFrame:
+    with open(file) as f:
+        file = yaml.safe_load(f)
+
+        return pd.concat(
+            [
+                pd.DataFrame(
+                    {"kit": x, "name": file[x].keys(), "barcode": file[x].values()}
+                )
+                for x in file.keys()
+            ]
+        ).reset_index()

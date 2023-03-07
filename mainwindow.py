@@ -40,7 +40,10 @@ from poresamplespandas.widgets.data_widget import DataWidget
 from poresamplespandas.views.sample_table_view import SampleTableView
 from poresamplespandas.import_data.import_analytix import import_analytix
 from poresamplespandas.enums.enums import VERTICAL_HEADER
-from poresamplespandas.import_data.import_barcodes import make_barcodes_df
+from poresamplespandas.import_data.import_barcodes import (
+    make_barcodes_df,
+    make_barcodes_df2,
+)
 
 
 VERSION = "PORESAMPLESPANDAS"
@@ -59,12 +62,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # barcodes
         self.barcode_file = barcodes
-        self.barcode_df = make_barcodes_df(self.barcode_file)
-        self.barcode_list = QListWidget()
-        self.barcode_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.barcode_list.setDragEnabled(True)
-        self.update_barcodes_to_barcodelist()
-        self.barcode_list.setMinimumWidth(40)
+        self.barcode_df = make_barcodes_df2(self.barcode_file)
 
         # controls
         self.pos_spinbox = QSpinBox()
@@ -109,7 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self._hide_columns()
 
     def populate_toolbar(self):
-        self.tabWidget = TabMenu(self.barcode_list)
+        self.tabWidget = TabMenu(self)
         self.toolBar.addAction(self.sb_buttons["file"])
         self.toolBar.addAction(self.sb_buttons["barcode"])
         self.toolBar.addAction(self.sb_buttons["help"])
@@ -121,6 +119,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "barcode": QAction("barcode", self),
             "help": QAction("help", self),
         }
+
         self.sb_buttons["file"].setIcon(qta.icon("fa5.file"))
         self.sb_buttons["file"].setStatusTip("Files")
         self.sb_buttons["file"].setCheckable(True)
@@ -181,7 +180,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             for i in range(1, int(text) + 1):
                 new_df = pd.DataFrame().assign(
-                    sample_id=[f"{name}_CTRL{i}"], order=[sort_order], comment=[f"{name} Control"]
+                    sample_id=[f"{name}_CTRL{i}"],
+                    order=[sort_order],
+                    comment=[f"{name} Control"],
                 )
                 controls.append(new_df)
             self.source_model.addRow(pd.concat(controls))
@@ -238,11 +239,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         )
         self.add_data_to_plate_widget()
-
-    def update_barcodes_to_barcodelist(self) -> None:
-        self.barcode_list.clear()
-        for bc in self.barcode_df["whole_name"]:
-            self.barcode_list.addItem(bc)
 
     def file_tab_signals(self) -> None:
         self.tabWidget.button_import.clicked.connect(self.on_import)
@@ -330,5 +326,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # remove all barcodes from model dataframe
         self.source_model._data = self.source_model._data.assign(barcodes=" ", kit=" ")
         self.source_model.sort()
-        self.barcode_df = make_barcodes_df(self.barcode_file)
-        self.update_barcodes_to_barcodelist()
+        self.barcode_df = make_barcodes_df2(self.barcode_file)
+        self.tabWidget.update_barcodes()

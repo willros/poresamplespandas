@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QListWidget,
     QAbstractItemView,
     QListWidgetItem,
+    QMainWindow,
 )
 from PySide6.QtCore import (
     QAbstractTableModel,
@@ -32,7 +33,7 @@ from pathlib import Path
 class SampleTableView(QTableView):
     """Class for The View of the sample sheet"""
 
-    def __init__(self, mainwindow):
+    def __init__(self, mainwindow: QMainWindow):
         super(SampleTableView, self).__init__()
         vh = self.verticalHeader()
         vh.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -101,11 +102,26 @@ class SampleTableView(QTableView):
 
     # dropping barcodes
     def dropEvent(self, e):
+        # following adds to the index depending on where in the order the QListWidget is.
+        # otherwise, everything starts from index 0 and the same barcode is always removed
+        # from the barcodes_df
+        # TODO CHANGE ALL OF THIS AND MAKE 2 DATAFRAMES INSTEAD!!
+        current_df = e.source().objectName()
+        first_df = self.main_window.barcode_df.kit.unique()[0]
+        shape = self.main_window.barcode_df.loc[lambda x: x.kit == first_df].shape[0]
+        add_to_index = dict(
+            zip(
+                self.main_window.tabWidget.barcode_lists.keys(),
+                [0, shape],
+            )
+        )
+        add = add_to_index[current_df]
+
         indexes = e.source().selectionModel().selectedRows()
         index_slice = (
-            slice(indexes[0].row(), indexes[-1].row())
+            slice(indexes[0].row() + add, indexes[-1].row() + add)
             if len(indexes) > 1
-            else slice(indexes[0].row(), indexes[0].row())
+            else slice(indexes[0].row() + add, indexes[0].row() + add)
         )
 
         # to undo adding of the barcodes
@@ -128,9 +144,9 @@ class SampleTableView(QTableView):
 
         # remove barcodes from barcodes df
         index_slice_drop = (
-            slice(indexes[0].row(), indexes[-1].row() + 1)
+            slice(indexes[0].row() + add, indexes[-1].row() + 1 + add)
             if len(indexes) > 1
-            else slice(indexes[0].row(), indexes[0].row() + 1)
+            else slice(indexes[0].row() + add, indexes[0].row() + 1 + add)
         )
 
         rows_to_remove = self.main_window.barcode_df.index[index_slice_drop]
@@ -140,7 +156,7 @@ class SampleTableView(QTableView):
         ).reset_index(drop=True)
 
         # update the barcode list
-        self.main_window.update_barcodes_to_barcodelist()
+        self.main_window.tabWidget.update_barcodes()
 
         # update the data
         self.model().dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
@@ -155,7 +171,7 @@ class SampleTableView(QTableView):
         self.main_window.barcode_df = self.barcodes_before
 
         # update the barcode list
-        self.main_window.update_barcodes_to_barcodelist()
+        self.main_window.tabWidget.update_barcodes()
 
         # update the data
         self.model().update_color_list()

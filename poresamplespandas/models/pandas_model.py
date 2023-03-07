@@ -26,10 +26,6 @@ from PySide6.QtCore import (
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtGui import QAction
 
-import sys
-import yaml
-from pathlib import Path
-
 from ..enums.enums import VERTICAL_HEADER
 
 
