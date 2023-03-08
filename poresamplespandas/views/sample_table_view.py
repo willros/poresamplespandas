@@ -139,6 +139,7 @@ class SampleTableView(QTableView):
         rows_to_add = slice(model_row, (model_row + number_of_rows))
 
         # add barcodes and kit to the model
+        # TODO add where the barcodes should go, i.e. barcode1 or barcode2
         self.model()._data.loc[rows_to_add, "barcodes"] = chosen_barcodes
         self.model()._data.loc[rows_to_add, "kit"] = chosen_kit
 
@@ -162,8 +163,6 @@ class SampleTableView(QTableView):
         self.model().dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
         self.model().layoutChanged.emit()
 
-        # Find the index and row of the QListWidgetItems:
-        # barcode_row = e.source().currentIndex().row()
 
     def undo_barcodes(self):
         # change back the data and the barcodes
